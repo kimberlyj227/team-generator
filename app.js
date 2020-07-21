@@ -15,13 +15,7 @@ const render = require("./lib/htmlRenderer");
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
 const questions = () =>
-    inquirer.prompt([{
-            type: "list",
-            message: "What is your role?",
-            choices: ["Manager", "Employee", "Engineer", "Intern"],
-            name: "role"
-
-        },
+    inquirer.prompt([
         {
             type: "input",
             message: "Enter first and last name",
@@ -37,6 +31,13 @@ const questions = () =>
             message: "Enter employee id.",
             name: "id"
         },
+        {
+            type: "list",
+            message: "What is the employee's role?",
+            choices: ["Manager", "Employee", "Engineer", "Intern"],
+            name: "role"
+
+        }
     ]).then((answers) => {
         console.log(answers)
         if (answers.role === "Engineer") {
@@ -47,10 +48,15 @@ const questions = () =>
                     name: "github"
             })
             .then((answer) => {
-                answers = {...answers, ...answer}
+                answers = {...answers, ...answer};
+                const {name, id, email, github} = answers
+                // employee = new Engineer(...Object.values(answers));
+                employee = new Engineer(name, id, email, github)
+                console.log(employee)
+                
                 
             })
-        }  else if(answers.role === "Intern") {
+        } else if(answers.role === "Intern") {
             inquirer.prompt(
                 {
                     type: "input",
@@ -58,7 +64,9 @@ const questions = () =>
                     name: "school"
             }).then((answer) => {
                 answers = {...answers, ...answer};
-                employee = new Intern(...Object.values(answers));
+                const {name, id, email, school} = answers
+                employee = new Intern(name, id, email, school);
+                console.log(employee)
             })
         } else if(answers.role === "Manager") {
             inquirer.prompt(
@@ -69,12 +77,33 @@ const questions = () =>
                 }
             ).then((answer) => {
                 answers = {...answers, ...answer};
+                const {name, id, email, officeNumber} = answers
+                employee = new Intern(name, id, email, officeNumber);
+                console.log(employee)
                 
             })
         }
-    })
+        
+    });
 
-    questions();
+
+
+    // const writeFile = () => {
+
+    //     fs.appendFile("employees.txt", employee + "\n", (err) => {
+    //         if (err) console.log(err)
+    
+    //         console.log("Employee saved to employees.txt");
+    //     })
+    // }
+
+    // const init = () => {
+    //     questions()
+    
+    // }
+
+    // init();
+
     
 
 
