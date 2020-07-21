@@ -4,6 +4,7 @@ const Intern = require("./lib/Intern");
 const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
+var employee;
 
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
@@ -13,6 +14,71 @@ const render = require("./lib/htmlRenderer");
 
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
+const questions = () =>
+    inquirer.prompt([{
+            type: "list",
+            message: "What is your role?",
+            choices: ["Manager", "Employee", "Engineer", "Intern"],
+            name: "role"
+
+        },
+        {
+            type: "input",
+            message: "Enter first and last name",
+            name: "name"
+        },
+        {
+            type: "input",
+            message: "Enter email address.",
+            name: "email"
+        },
+        {
+            type: "input",
+            message: "Enter employee id.",
+            name: "id"
+        },
+    ]).then((answers) => {
+        console.log(answers)
+        if (answers.role === "Engineer") {
+            inquirer.prompt(
+                {
+                    type: "input",
+                    message: "Enter github username.",
+                    name: "github"
+            })
+            .then((answer) => {
+                answers = {...answers, ...answer}
+                
+            })
+        }  else if(answers.role === "Intern") {
+            inquirer.prompt(
+                {
+                    type: "input",
+                    message: "Enter school.",
+                    name: "school"
+            }).then((answer) => {
+                answers = {...answers, ...answer};
+                employee = new Intern(...Object.values(answers));
+            })
+        } else if(answers.role === "Manager") {
+            inquirer.prompt(
+                {
+                    type: "input",
+                    message: "Enter office number",
+                    name: "officeNumber"
+                }
+            ).then((answer) => {
+                answers = {...answers, ...answer};
+                
+            })
+        }
+    })
+
+    questions();
+    
+
+
+
 
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
