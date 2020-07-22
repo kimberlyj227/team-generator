@@ -12,9 +12,7 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
-
-// Write code to use inquirer to gather information about the development team members,
-// and to create objects for each team member (using the correct classes as blueprints!)
+// questions to ask
 const questions = [{
         type: "input",
         message: "Enter employee's name.",
@@ -37,7 +35,7 @@ const questions = [{
         name: "id"
     }
 ]
-
+// add employees based on role type
 const addManager = (name, id, email, officeNumber) => {
     employee = new Manager(name, id, email, officeNumber);
     employees.push(employee)
@@ -51,9 +49,9 @@ const addIntern = (name, id, email, school) => {
     employees.push(employee)
 };
 
-
+//function to ask questions and write file
 const getEmployees = () => {
-    console.log("Please build your team")
+
     inquirer.prompt(questions)
         .then(({
             name,
@@ -61,9 +59,9 @@ const getEmployees = () => {
             id,
             email
         }) => {
-            console.log(name, role, id, email)
-            let roleType;
 
+            let roleType;
+            // asks questions specific to employee type
             if (role === "Engineer") {
                 roleType = "Github username."
             } else if (role === "Intern") {
@@ -72,69 +70,52 @@ const getEmployees = () => {
                 roleType = "office number."
             }
 
-            inquirer.prompt([{
-                    type: "input",
-                    message: `Enter employee's ${roleType}`,
-                    name: "roleType"
-                },
-                {
-                    type: "list",
-                    message: "Would you like to add another employee?",
-                    choices: ["Yes", "No"],
-                    name: "addEmployee"
-                }
+            inquirer.prompt([
+                    {
+                        type: "input",
+                        message: `Enter employee's ${roleType}`,
+                        name: "roleType"
+                    },
+                    {
+                        type: "list",
+                        message: "Would you like to add another employee?",
+                        choices: ["Yes", "No"],
+                        name: "addEmployee"
+                    }
 
-            ])
-            .then(({
-                roleType,
-                addEmployee
-            }) => {
-                console.log(roleType, addEmployee);
-                
-                if (role === "Manager") {
-                    addManager(name, id, email, roleType);
-                    console.log(employees);
-                } else if (role === "Engineer") {
-                    addEngineer(name, id, email, roleType)
-                } else {
-                    addIntern(name, id, email, roleType)
-                }
-                
-                if (addEmployee === "Yes") {
-                    getEmployees();
-                } else {
-                    
-                    // .then(() => {
+                ])
+                .then(({
+                    roleType,
+                    addEmployee
+                }) => {
+                    // builds new employees based on role type
+                    if (role === "Manager") {
+                        addManager(name, id, email, roleType);
+                    } else if (role === "Engineer") {
+                        addEngineer(name, id, email, roleType)
+                    } else {
+                        addIntern(name, id, email, roleType)
+                    }
+                    // adds more employees or writes file
+                    if (addEmployee === "Yes") {
+                        getEmployees();
+                    } else {
                         fs.writeFile(outputPath, render(employees), err => {
                             if (err) throw err
                             console.log("Team members written successfully to output/team.html")
                         })
-                    // })
-                }
-               
-            })
-            
-        
+                    }
+
+                })
+
+
         })
-        
+
 }
 
-getEmployees();
+const init = () => {
+    console.log("Let's build your team!");
+    getEmployees();
+}
 
-
-
-// After the user has input all employees desired, call the `render` function (required
-// above) and pass in an array containing all employee objects; the `render` function will
-// generate and return a block of HTML including templated divs for each employee!
-
-// After you have your html, you're now ready to create an HTML file using the HTML
-// returned from the `render` function. Now write it to a file named `team.html` in the
-// `output` folder. You can use the variable `outputPath` above target this location.
-// Hint: you may need to check if the `output` folder exists and create it if it
-// does not.
-
-// HINT: each employee type (manager, engineer, or intern) has slightly different
-// information; write your code to ask different questions via inquirer depending on
-// employee type.
-
-
+init();
