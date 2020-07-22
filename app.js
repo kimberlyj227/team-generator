@@ -5,6 +5,7 @@ const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
 var employee;
+const employees = [];
 
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
@@ -14,97 +15,105 @@ const render = require("./lib/htmlRenderer");
 
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
-const questions = () =>
-    inquirer.prompt([
-        {
-            type: "input",
-            message: "Enter first and last name",
-            name: "name"
-        },
-        {
-            type: "input",
-            message: "Enter email address.",
-            name: "email"
-        },
-        {
-            type: "input",
-            message: "Enter employee id.",
-            name: "id"
-        },
-        {
-            type: "list",
-            message: "What is the employee's role?",
-            choices: ["Manager", "Employee", "Engineer", "Intern"],
-            name: "role"
+const questions = [{
+        type: "input",
+        message: "Enter employee's name.",
+        name: "name"
+    },
+    {
+        type: "list",
+        message: "Enter team member's role.",
+        choices: ["Manager", "Engineer", "Intern"],
+        name: "role"
+    },
+    {
+        type: "input",
+        message: "Enter email address.",
+        name: "email"
+    },
+    {
+        type: "input",
+        message: "Enter employee id.",
+        name: "id"
+    }
+]
 
-        }
-    ]).then((answers) => {
-        console.log(answers)
-        if (answers.role === "Engineer") {
-            inquirer.prompt(
-                {
+const addManager = (name, id, email, officeNumber) => {
+    employee = new Manager(name, id, email, officeNumber);
+    employees.push(employee)
+};
+const addEngineer = (name, id, email, github) => {
+    employee = new Manager(name, id, email, github);
+    employees.push(employee)
+};
+const addIntern = (name, id, email, school) => {
+    employee = new Manager(name, id, email, school);
+    employees.push(employee)
+};
+
+
+const getEmployees = () => {
+    console.log("Please build your team")
+    inquirer.prompt(questions)
+        .then(({
+            name,
+            role,
+            id,
+            email
+        }) => {
+            console.log(name, role, id, email)
+            let roleType;
+
+            if (role === "Engineer") {
+                roleType = "Github username."
+            } else if (role === "Intern") {
+                roleType = "school name."
+            } else if (role === "Manager") {
+                roleType = "office number."
+            }
+
+            inquirer.prompt([{
                     type: "input",
-                    message: "Enter github username.",
-                    name: "github"
-            })
-            .then((answer) => {
-                answers = {...answers, ...answer};
-                const {name, id, email, github} = answers
-                // employee = new Engineer(...Object.values(answers));
-                employee = new Engineer(name, id, email, github)
-                console.log(employee)
-                
-                
-            })
-        } else if(answers.role === "Intern") {
-            inquirer.prompt(
+                    message: `Enter employee's ${roleType}`,
+                    name: "roleType"
+                },
                 {
-                    type: "input",
-                    message: "Enter school.",
-                    name: "school"
-            }).then((answer) => {
-                answers = {...answers, ...answer};
-                const {name, id, email, school} = answers
-                employee = new Intern(name, id, email, school);
-                console.log(employee)
-            })
-        } else if(answers.role === "Manager") {
-            inquirer.prompt(
-                {
-                    type: "input",
-                    message: "Enter office number",
-                    name: "officeNumber"
+                    type: "list",
+                    message: "Would you like to add another employee?",
+                    choices: ["Yes", "No"],
+                    name: "addEmployee"
                 }
-            ).then((answer) => {
-                answers = {...answers, ...answer};
-                const {name, id, email, officeNumber} = answers
-                employee = new Intern(name, id, email, officeNumber);
-                console.log(employee)
+
+            ])
+            .then(({
+                roleType,
+                addEmployee
+            }) => {
+                console.log(roleType, addEmployee);
                 
+                if (role === "Manager") {
+                    addManager(name, id, email, roleType);
+                    console.log(employees);
+                } else if (role === "Engineer") {
+                    addEngineer(name, id, email, roleType)
+                } else {
+                    addIntern(name, id, email, roleType)
+                }
+                
+                if (addEmployee === "Yes") {
+                    getEmployees();
+                } else {
+                    return false;
+                }
+               
             })
-        }
-        
-    });
+        })
+}
+
+getEmployees();
 
 
 
-    // const writeFile = () => {
-
-    //     fs.appendFile("employees.txt", employee + "\n", (err) => {
-    //         if (err) console.log(err)
-    
-    //         console.log("Employee saved to employees.txt");
-    //     })
-    // }
-
-    // const init = () => {
-    //     questions()
-    
-    // }
-
-    // init();
-
-    
 
 
 
@@ -128,3 +137,9 @@ const questions = () =>
 // for further information. Be sure to test out each class and verify it generates an
 // object with the correct structure and methods. This structure will be crucial in order
 // for the provided `render` function to work! ```
+
+// {
+//     type: "input",
+//     message: "Enter the Manager's name.",
+//     name: "name"
+// }
