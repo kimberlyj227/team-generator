@@ -43,11 +43,11 @@ const addManager = (name, id, email, officeNumber) => {
     employees.push(employee)
 };
 const addEngineer = (name, id, email, github) => {
-    employee = new Manager(name, id, email, github);
+    employee = new Engineer(name, id, email, github);
     employees.push(employee)
 };
 const addIntern = (name, id, email, school) => {
-    employee = new Manager(name, id, email, school);
+    employee = new Intern(name, id, email, school);
     employees.push(employee)
 };
 
@@ -111,10 +111,6 @@ const getEmployees = () => {
 }
 
 getEmployees();
-
-
-
-
 
 
 
