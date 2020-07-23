@@ -22,6 +22,6 @@ To develop this app further, I would like to add validation on the data to make 
 [Github](https://github.com/kimberlyj227)<br>
 Email : kimberly.j.owens@gmail.com
 ## Demo
-[Demo Video](https://kimberlyj227.github.io/team-generator/)
+[Demo Video](https://kimberlyj227.github.io/team-generator/index.html)
 ![Application Demo](Assets/demo.png)
 
